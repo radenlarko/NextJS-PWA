@@ -16,7 +16,7 @@ interface Props {
   dataPost: Post[];
 }
 
-const List: NextPage<Props> = ({ dataPost }) => {
+const PostList: NextPage<Props> = ({ dataPost }) => {
   const { data } = useQuery<Post[]>(["get-posts"], getPosts, {
     initialData: dataPost,
     refetchOnMount: false,
@@ -62,7 +62,7 @@ const List: NextPage<Props> = ({ dataPost }) => {
   );
 };
 
-export default List;
+export default PostList;
 
 export const getServerSideProps: GetServerSideProps<Props> = async () => {
   const dataPost = await getPosts();
