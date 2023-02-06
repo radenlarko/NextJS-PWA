@@ -7,12 +7,9 @@ import { GetServerSideProps, NextPage } from "next";
 import { getAdvice } from "@/utils/fetchApi";
 import { useQuery } from "@tanstack/react-query";
 import { useState } from "react";
+import { Advice } from "@/typing";
 
 const inter = Inter({ subsets: ["latin"] });
-
-interface Advice {
-  slip: { id: number; advice: string };
-}
 
 interface Props {
   advice: Advice;
@@ -41,7 +38,7 @@ const Home: NextPage<Props> = ({ advice }) => {
           minH="100vh"
         >
           <Box maxW="7xl" mx="auto" p={{ base: 2, md: 10 }}>
-            <HeaderBar navigate="#" NavigateIcon={BsList} />
+            <HeaderBar navigate="/post/list" NavigateIcon={BsList} />
             <Flex flexDir="column" alignItems="center" mt={14}>
               <Flex
                 flexDir="column"
