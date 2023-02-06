@@ -17,6 +17,7 @@ interface Props {
 }
 
 const PostList: NextPage<Props> = ({ dataPost }) => {
+  const bgCard = useColorModeValue("gray.100", "gray.700");
   const { data } = useQuery<Post[]>(["get-posts"], getPosts, {
     initialData: dataPost,
     refetchOnMount: false,
@@ -41,12 +42,7 @@ const PostList: NextPage<Props> = ({ dataPost }) => {
             <Box mt={4}>
               {data.map((item) => (
                 <NextLink key={item.id} href={`/post/${item.id}`}>
-                  <Box
-                    mb={2}
-                    p={6}
-                    bg={useColorModeValue("gray.100", "gray.700")}
-                    borderRadius="lg"
-                  >
+                  <Box mb={2} p={6} bg={bgCard} borderRadius="lg">
                     <Text fontWeight={500}>{item.title}</Text>
                     <Text fontSize="sm" fontWeight="light">
                       {item.body}
