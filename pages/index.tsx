@@ -1,11 +1,31 @@
-import Head from 'next/head'
-import Image from 'next/image'
-import { Inter } from '@next/font/google'
-import styles from '@/styles/Home.module.css'
+import Head from "next/head";
+import { Inter } from "@next/font/google";
+import { Box, Button, Flex, Text, useColorModeValue } from "@chakra-ui/react";
+import { HeaderBar } from "../components";
+import { BsList } from "react-icons/bs";
+import { GetServerSideProps, NextPage } from "next";
+import { getAdvice } from "@/utils/fetchApi";
+import { useQuery } from "@tanstack/react-query";
+import { useState } from "react";
 
-const inter = Inter({ subsets: ['latin'] })
+const inter = Inter({ subsets: ["latin"] });
 
-export default function Home() {
+interface Advice {
+  slip: { id: number; advice: string };
+}
+
+interface Props {
+  advice: Advice;
+}
+
+const Home: NextPage<Props> = ({ advice }) => {
+  const [adviceText, setAdviceText] = useState(advice.slip.advice);
+  const { isFetching, refetch } = useQuery<Advice>(["get-advise"], getAdvice, {
+    onSuccess: (dataSuccess) => setAdviceText(dataSuccess.slip.advice),
+    refetchOnMount: false,
+    refetchOnWindowFocus: false,
+  });
+
   return (
     <>
       <Head>
@@ -14,110 +34,60 @@ export default function Home() {
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
-      <main className={styles.main}>
-        <div className={styles.description}>
-          <p>
-            Get started by editing&nbsp;
-            <code className={styles.code}>pages/index.tsx</code>
-          </p>
-          <div>
-            <a
-              href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-              target="_blank"
-              rel="noopener noreferrer"
-            >
-              By{' '}
-              <Image
-                src="/vercel.svg"
-                alt="Vercel Logo"
-                className={styles.vercelLogo}
-                width={100}
-                height={24}
-                priority
-              />
-            </a>
-          </div>
-        </div>
-
-        <div className={styles.center}>
-          <Image
-            className={styles.logo}
-            src="/next.svg"
-            alt="Next.js Logo"
-            width={180}
-            height={37}
-            priority
-          />
-          <div className={styles.thirteen}>
-            <Image
-              src="/thirteen.svg"
-              alt="13"
-              width={40}
-              height={31}
-              priority
-            />
-          </div>
-        </div>
-
-        <div className={styles.grid}>
-          <a
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Docs <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Find in-depth information about Next.js features and&nbsp;API.
-            </p>
-          </a>
-
-          <a
-            href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Learn <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Learn about Next.js in an interactive course with&nbsp;quizzes!
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Templates <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Discover and deploy boilerplate example Next.js&nbsp;projects.
-            </p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            className={styles.card}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            <h2 className={inter.className}>
-              Deploy <span>-&gt;</span>
-            </h2>
-            <p className={inter.className}>
-              Instantly deploy your Next.js site to a shareable URL
-              with&nbsp;Vercel.
-            </p>
-          </a>
-        </div>
+      <main>
+        <Box
+          className={inter.className}
+          bg={useColorModeValue("gray.50", "gray.800")}
+          minH="100vh"
+        >
+          <Box maxW="7xl" mx="auto" p={{ base: 2, md: 10 }}>
+            <HeaderBar navigate="#" NavigateIcon={BsList} />
+            <Flex flexDir="column" alignItems="center" mt={14}>
+              <Flex
+                flexDir="column"
+                alignItems="center"
+                bg={useColorModeValue("gray.100", "gray.700")}
+                borderWidth={1}
+                borderColor={useColorModeValue("gray.300", "gray.600")}
+                p={10}
+                borderRadius="xl"
+                maxW="xl"
+              >
+                <Text
+                  textAlign="center"
+                  fontSize="2xl"
+                  fontWeight={500}
+                  textTransform="uppercase"
+                  letterSpacing="10px"
+                >
+                  Advice
+                </Text>
+                <Text textAlign="center">{adviceText}</Text>
+                <Button
+                  isLoading={isFetching}
+                  onClick={() => refetch()}
+                  colorScheme="pink"
+                  mt={4}
+                >
+                  Seek Advice 🤲
+                </Button>
+              </Flex>
+            </Flex>
+          </Box>
+        </Box>
       </main>
     </>
-  )
-}
+  );
+};
+
+export default Home;
+
+export const getServerSideProps: GetServerSideProps<Props> = async () => {
+  const advice = await getAdvice();
+
+  return {
+    props: {
+      advice,
+    },
+  };
+};
